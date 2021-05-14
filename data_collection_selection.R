@@ -2,6 +2,11 @@ library(tidyverse)
 
 data <- read.csv(url("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv"))
 
+data <-
+  data %>%
+  dplyr::mutate(date = as.Date(date)) %>%
+  dplyr::filter(grepl("^OWID_",iso_code) == FALSE)
+  
 glimpse(data)
  
 ## example areas of focus (there is no expectation to cover all of these, 
@@ -22,3 +27,50 @@ glimpse(data)
 ## story telling through visualisations
 ##
 ## aim to spend no more than 2 hours
+
+
+# task1: where confirmed cases are increasing / decreasing (geographically)
+task1 <- 
+  data %>%
+  dplyr::select(iso_code, location, date 
+                , new_cases, new_cases_smoothed 
+                , new_cases_per_million, new_cases_smoothed_per_million
+                , reproduction_rate)
+
+  
+
+
+# task2: where case fatality rates have been highest or are currently 
+#        increasing / decreasing
+
+task2 <- 
+  data %>%
+  dplyr::select(iso_code, location, date
+                , total_deaths 
+                , total_cases) %>%
+  #mortality in patients at risk
+  dplyr::mutate(mortality_icu = total_deaths / total_cases) %>% 
+  dplyr::filter(total_cases > 0) %>%
+  dplyr::group_by(iso_code) %>%
+  dplyr::filter(date == max(date)) #%>%
+  #view()
+
+
+
+
+# task3: which countries have been most ‘successful’ at vaccinating their 
+#        population, to date
+  
+task3 <- 
+  data %>%
+  dplyr::select(iso_code, location, date
+                , people_vaccinated_per_hundred 
+                , people_fully_vaccinated_per_hundred) %>%
+  dplyr::filter(people_vaccinated_per_hundred >= 0 & people_fully_vaccinated_per_hundred >= 0) %>%
+  dplyr::group_by(iso_code) %>%
+  dplyr::filter(date == max(date)) #%>%
+  # view()
+
+
+glimpse(data)  
+  
