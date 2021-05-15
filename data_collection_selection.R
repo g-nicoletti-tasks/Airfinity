@@ -29,38 +29,62 @@ glimpse(data)
 ## aim to spend no more than 2 hours
 
 
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+#
 # task1: where confirmed cases are increasing / decreasing (geographically)
+#
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 task1 <- 
   data %>%
   dplyr::select(iso_code, location, date 
                 , new_cases, new_cases_smoothed 
                 , new_cases_per_million, new_cases_smoothed_per_million
-                , reproduction_rate)
+                , reproduction_rate) %>%
+  group_by(iso_code, location) %>% 
+  arrange(date, .by_group = TRUE) %>%
+  mutate(pct_change = (new_cases/lag(new_cases) - 1) * 100)
 
-  
+view(task1)  
+
+# chart1: map of coutries, new_cases_smoothed_per_million - filter on dates
+# chart2: line chart, reproduction rate by date
 
 
+
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+#
 # task2: where case fatality rates have been highest or are currently 
 #        increasing / decreasing
+#
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 task2 <- 
   data %>%
   dplyr::select(iso_code, location, date
-                , total_deaths 
+                , total_deaths, total_deaths_per_million 
                 , total_cases) %>%
   #mortality in patients at risk
-  dplyr::mutate(mortality_icu = total_deaths / total_cases) %>% 
+  dplyr::mutate(mortality = total_deaths / total_cases) %>% 
   dplyr::filter(total_cases > 0) %>%
   dplyr::group_by(iso_code) %>%
   dplyr::filter(date == max(date)) #%>%
   #view()
 
+view(task2)
+
+# chart3: scatterplot, mortality vs totald_deaths_per_million
 
 
 
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+#
 # task3: which countries have been most ‘successful’ at vaccinating their 
 #        population, to date
-  
+#
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 task3 <- 
   data %>%
   dplyr::select(iso_code, location, date
