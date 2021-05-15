@@ -1,4 +1,5 @@
 library(tidyverse)
+library(ggplot2)
 
 data <- read.csv(url("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv"))
 
@@ -48,7 +49,21 @@ task1 <-
 view(task1)  
 
 # chart1: map of coutries, new_cases_smoothed_per_million - filter on dates
+# task1 %>%
+#   ggplot(aes(new_cases_smoothed_per_million)) +
+  
+
 # chart2: line chart, reproduction rate by date
+task1 %>%
+  dplyr::filter(location == "United Kingdom") %>%
+  ggplot(aes(date, reproduction_rate)) +
+  geom_line() +
+  ylab("Reproduction rate") +
+  labs(
+    title = "How contagious is Covid-19?"
+    , subtitle = "Avg no. of people who will contract Covid-19 from one person infected") +
+  geom_hline(yintercept=1, linetype="dashed", color = "red") +
+  theme_bw()
 
 
 
@@ -66,7 +81,7 @@ task2 <-
                 , total_deaths, total_deaths_per_million 
                 , total_cases) %>%
   #mortality in patients at risk
-  dplyr::mutate(mortality = total_deaths / total_cases) %>% 
+  dplyr::mutate(case_fatality_rate = total_deaths / total_cases) %>% 
   dplyr::filter(total_cases > 0) %>%
   dplyr::group_by(iso_code) %>%
   dplyr::filter(date == max(date)) #%>%
@@ -75,6 +90,14 @@ task2 <-
 view(task2)
 
 # chart3: scatterplot, mortality vs totald_deaths_per_million
+task2 %>%
+  ggplot(aes(case_fatality_rate, total_deaths_per_million)) +
+  geom_jitter() +
+  ylab("Deaths per million") +
+  xlab("Case fatality rate") +
+  labs(title = "How deadly is Covid-19?") +
+  theme_bw()
+
 
 
 
@@ -94,6 +117,16 @@ task3 <-
   dplyr::group_by(iso_code) %>%
   dplyr::filter(date == max(date)) #%>%
   # view()
+
+
+# chart4: scatterplot, people_vaccinated_per_hundred vs people_fully_vaccinated_per_hundred
+task3 %>%
+  ggplot(aes(people_vaccinated_per_hundred, people_fully_vaccinated_per_hundred)) +
+  geom_jitter() +
+  ylab("People vaccinated") +
+  xlab("Fully vaccinated") +
+  labs(title = "How deadly is Covid-19?") +
+  theme_bw()
 
 
 glimpse(data)  
