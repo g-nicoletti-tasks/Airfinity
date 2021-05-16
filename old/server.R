@@ -56,6 +56,7 @@ server <- function(input, output) {
         
         task1 %>%
           dplyr::filter(location == input$type) %>%
+          #dplyr::filter(date == input$date) %>%
           ggplot(aes(date, reproduction_rate)) +
           geom_line() +
           ylab("Reproduction rate") +
