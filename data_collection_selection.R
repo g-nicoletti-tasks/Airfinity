@@ -48,11 +48,6 @@ task1 <-
 
 view(task1)  
 
-# chart1: map of coutries, new_cases_smoothed_per_million - filter on dates
-# task1 %>%
-#   ggplot(aes(new_cases_smoothed_per_million)) +
-  
-
 # chart2: line chart, reproduction rate by date
 task1 %>%
   dplyr::filter(location == "United Kingdom") %>%
