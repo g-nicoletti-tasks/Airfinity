@@ -44,9 +44,27 @@ task1 <-
                 , reproduction_rate) %>%
   group_by(iso_code, location) %>% 
   arrange(date, .by_group = TRUE) %>%
-  mutate(pct_change = (new_cases/lag(new_cases) - 1) * 100)
+  mutate(pct_change = (new_cases_smoothed_per_million/lag(new_cases_smoothed_per_million) - 1) * 100)
 
 view(task1)  
+
+# chart1: new cases smoothed per million
+task1 %>%
+  #dplyr::filter(date == input$date[2]) %>%
+  dplyr::filter(date == "2021-05-05") %>%
+  dplyr::arrange(desc(pct_change)) %>%
+  dplyr::filter(pct_change >= 10 | pct_change < -10) %>%
+  drop_na() %>%
+  ggplot(aes(x = reorder(location, pct_change), pct_change)) +
+  geom_col() +
+  coord_flip() +
+  ylab("Reproduction rate") +
+  labs(
+    title = "How contagious is Covid-19?"
+    , subtitle = "Avg no. of people who will contract Covid-19 from one person infected") +
+  #geom_hline(yintercept=1, linetype="dashed", color = "red") +
+  theme_bw()
+
 
 # chart2: line chart, reproduction rate by date
 task1 %>%
@@ -112,6 +130,8 @@ task3 <-
   dplyr::group_by(iso_code) %>%
   dplyr::filter(date == max(date)) #%>%
   # view()
+
+view(task3)
 
 
 # chart4: scatterplot, people_vaccinated_per_hundred vs people_fully_vaccinated_per_hundred
