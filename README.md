@@ -1,2 +1,2 @@
-# prj-int-Airfinity
+# Airfinity
 An analysis for Airfinity
